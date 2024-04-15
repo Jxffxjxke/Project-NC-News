@@ -1,3 +1,13 @@
-# Northcoders News API
+# My Back-End-Project: Northcoders News API
 
-For instructions, please head over to [L2C NC News](https://l2c.northcoders.com/courses/be/nc-news).
+Create .env.test, .env.development, .gitignore files and git init.
+
+.env.test ->
+PGDATABASE = nc_news_test
+
+.env.development ->
+PGDATABASE=nc_news
+
+.gitignore ->
+node_modules
+.env.*
