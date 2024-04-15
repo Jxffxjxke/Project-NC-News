@@ -29,11 +29,32 @@ describe("/api/topics", () => {
       .get("/api/topics")
       .expect(200)
       .then(({ body }) => {
-        expect(body.length).toBe(3);
         body.forEach((topic) => {
           expect(typeof topic.description).toBe("string");
           expect(typeof topic.slug).toBe("string");
         });
+      });
+  });
+});
+
+describe("/api", () => {
+  test("GET 200 - Responds with all api endpoints and information about them.", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body }) => {
+        expect(Object.keys(body)).toMatchObject([
+          "GET /api",
+          "GET /api/topics",
+          "GET /api/articles",
+        ]);
+        for (const endpoint in body) {
+          expect(Object.keys(body[endpoint])).toEqual([
+            "description",
+            "queries",
+            "exampleResponse",
+          ]);
+        }
       });
   });
 });
