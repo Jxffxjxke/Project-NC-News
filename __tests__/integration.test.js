@@ -1,6 +1,7 @@
 const app = require("../db/app");
 const db = require("../db/connection");
 const data = require("../db/data/test-data/index");
+const endpointsData = require("../endpoints.json");
 const seed = require("../db/seeds/seed");
 const request = require("supertest");
 
@@ -42,19 +43,38 @@ describe("/api", () => {
     return request(app)
       .get("/api")
       .expect(200)
+        .then( ( { body } ) =>
+        {
+        expect(body).toEqual(endpointsData);
+      });
+  });
+});
+
+describe("/api/articles", () => {
+  test("GET 200 - Responds with an article object", () => {
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
       .then(({ body }) => {
-        expect(Object.keys(body)).toMatchObject([
-          "GET /api",
-          "GET /api/topics",
-          "GET /api/articles",
-        ]);
-        for (const endpoint in body) {
-          expect(Object.keys(body[endpoint])).toEqual([
-            "description",
-            "queries",
-            "exampleResponse",
-          ]);
-        }
+        expect(body).toMatchObject({
+          article_id: 1,
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging",
+          created_at: "2020-07-09T20:11:00.000Z",
+          votes: 100,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        });
+      });
+  });
+  test("GET 404 - Incorrect article id responds with article not found error", () => {
+    return request(app)
+      .get("/api/articles/500")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("Article not found");
       });
   });
 });
