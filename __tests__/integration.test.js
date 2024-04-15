@@ -4,6 +4,7 @@ const data = require("../db/data/test-data/index");
 const endpointsData = require("../endpoints.json");
 const seed = require("../db/seeds/seed");
 const request = require("supertest");
+require("jest-sorted");
 
 beforeEach(() => {
   return seed(data);
@@ -29,8 +30,8 @@ describe("/api/topics", () => {
     return request(app)
       .get("/api/topics")
       .expect(200)
-      .then(({ body }) => {
-        body.forEach((topic) => {
+      .then(({ body: { topics } }) => {
+        topics.forEach((topic) => {
           expect(typeof topic.description).toBe("string");
           expect(typeof topic.slug).toBe("string");
         });
@@ -43,20 +44,19 @@ describe("/api", () => {
     return request(app)
       .get("/api")
       .expect(200)
-        .then( ( { body } ) =>
-        {
-        expect(body).toEqual(endpointsData);
+      .then(({ body }) => {
+        expect(body.endpoints).toEqual(endpointsData);
       });
   });
 });
 
-describe("/api/articles", () => {
+describe("/api/articles/:article_id", () => {
   test("GET 200 - Responds with an article object", () => {
     return request(app)
       .get("/api/articles/1")
       .expect(200)
-      .then(({ body }) => {
-        expect(body).toMatchObject({
+      .then(({ body: { article } }) => {
+        expect(article).toMatchObject({
           article_id: 1,
           title: "Living in the shadow of a great man",
           topic: "mitch",
@@ -75,6 +75,38 @@ describe("/api/articles", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.message).toBe("Article not found");
+      });
+  });
+  test("GET 400 - Incorrect article id type responds with bad request error", () => {
+    return request(app)
+      .get("/api/articles/not_valid_type")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad request");
+      });
+  });
+} );
+
+describe("/api/articles", () => {
+  test("GET 200 - Responds with an array of all articles and the comment counts of each", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("created_at", { descending: true });
+        articles.forEach((article) => {
+          console.log(article);
+          expect(Object.keys(article)).toEqual([
+            "author",
+            "title",
+            "article_id",
+            "topic",
+            "created_at",
+            "votes",
+            "article_img_url",
+            "comment_count",
+          ]);
+        });
       });
   });
 });
