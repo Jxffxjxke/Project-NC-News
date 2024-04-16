@@ -154,4 +154,50 @@ describe("/api/articles/:article_id/comments", () => {
         expect(message).toBe("Bad request");
       });
   });
+  test("POST 201 - Adds given comment to given article where author is given username, responds with added comment", () => {
+    const newComment = {
+      body: "Comment",
+      author: "lurker",
+    };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body: { comment } }) => {
+        expect(comment).toMatchObject({
+          comment_id: 19,
+          body: "Comment",
+          article_id: 1,
+          author: "lurker",
+          votes: 0,
+        });
+      });
+  });
+  test("POST 400 - Responds with a bad request error when request format is incorrect", () => {
+    // Should be body: not bod: so should error.
+    const newComment = {
+      not_body: "Comment",
+      author: "lurker",
+    };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("Bad request");
+      });
+  });
+  test("POST 404 - Responds with article not found when article given is not found", () => {
+    const newComment = {
+      body: "Comment",
+      author: "Author",
+    };
+    return request(app)
+      .post("/api/articles/500/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("Article not found");
+      });
+  });
 });
