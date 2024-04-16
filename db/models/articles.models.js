@@ -40,7 +40,8 @@ exports.fetchArticles = () => {
     });
 };
 
-exports.checkArticleExists = (articleId) => {
+exports.checkArticleExists = ( articleId ) =>
+{
   return db
     .query(`SELECT * FROM articles WHERE article_id=$1;`, [articleId])
     .then(({ rows: articles }) => {
