@@ -85,6 +85,56 @@ describe("/api/articles/:article_id", () => {
         expect(message).toBe("Bad request");
       });
   });
+  test("PATCH 200 - Responds with the updated article and the votes count changed by given amount", () => {
+    const send = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(send)
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toEqual({
+          article_id: 1,
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging",
+          created_at: "2020-07-09T20:11:00.000Z",
+          votes: 101,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        });
+      });
+  });
+  test("PATCH 404 - Respond with not found error if article id is not found", () => {
+    const send = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/articles/500")
+      .send(send)
+      .expect(404)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("Article not found");
+      });
+  });
+  test("PATCH 400 - Responds with bad request error if article id is invalid", () => {
+    const send = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/articles/NaN")
+      .send(send)
+      .expect(400)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("Bad request");
+      });
+  });
+  test("PATCH 400 - Responds with bad request error if votes is invalid", () => {
+    const send = { inc_votes: "NaN" };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(send)
+      .expect(400)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("Bad request");
+      });
+  });
 });
 
 describe("/api/articles", () => {
@@ -163,8 +213,7 @@ describe("/api/articles/:article_id/comments", () => {
       .post("/api/articles/1/comments")
       .send(newComment)
       .expect(201)
-      .then( ( { body: { comment } } ) =>
-      {
+      .then(({ body: { comment } }) => {
         expect(comment).toMatchObject({
           comment_id: 19,
           body: "Comment",
