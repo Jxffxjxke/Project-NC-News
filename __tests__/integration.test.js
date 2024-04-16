@@ -19,8 +19,8 @@ describe("Any incorrect URL", () => {
     return request(app)
       .get("/api/wrong_URL")
       .expect(404)
-      .then(({ body }) => {
-        expect(body.message).toBe("URL not found");
+      .then(({ body: { message } }) => {
+        expect(message).toBe("URL not found");
       });
   });
 });
@@ -44,8 +44,8 @@ describe("/api", () => {
     return request(app)
       .get("/api")
       .expect(200)
-      .then(({ body }) => {
-        expect(body.endpoints).toEqual(endpointsData);
+      .then(({ body: { endpoints } }) => {
+        expect(endpoints).toEqual(endpointsData);
       });
   });
 });
@@ -69,23 +69,23 @@ describe("/api/articles/:article_id", () => {
         });
       });
   });
-  test("GET 404 - Incorrect article id responds with article not found error", () => {
+  test("GET 404 - Responds with article not found if id is valid but not found in database", () => {
     return request(app)
       .get("/api/articles/500")
       .expect(404)
-      .then(({ body }) => {
-        expect(body.message).toBe("Article not found");
+      .then(({ body: { message } }) => {
+        expect(message).toBe("Article not found");
       });
   });
-  test("GET 400 - Incorrect article id type responds with bad request error", () => {
+  test("GET 400 - Responds with bad request error if id is invalid", () => {
     return request(app)
-      .get("/api/articles/not_valid_type")
+      .get("/api/articles/NaN")
       .expect(400)
-      .then(({ body }) => {
-        expect(body.message).toBe("Bad request");
+      .then(({ body: { message } }) => {
+        expect(message).toBe("Bad request");
       });
   });
-} );
+});
 
 describe("/api/articles", () => {
   test("GET 200 - Responds with an array of all articles and the comment counts of each", () => {
@@ -95,7 +95,6 @@ describe("/api/articles", () => {
       .then(({ body: { articles } }) => {
         expect(articles).toBeSortedBy("created_at", { descending: true });
         articles.forEach((article) => {
-          console.log(article);
           expect(Object.keys(article)).toEqual([
             "author",
             "title",
@@ -107,6 +106,52 @@ describe("/api/articles", () => {
             "comment_count",
           ]);
         });
+      });
+  });
+});
+
+describe("/api/articles/:article_id/comments", () => {
+  test("GET 200 - Responds with an array of comments from given article id in descending order", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments.length).toBe(11);
+        expect(comments).toBeSortedBy("created_at", { descending: true });
+        comments.forEach((comment) => {
+          expect(Object.keys(comment)).toEqual([
+            "comment_id",
+            "body",
+            "article_id",
+            "author",
+            "votes",
+            "created_at",
+          ]);
+        });
+      });
+  });
+  test("GET 200 - Responds with an empty array if there are no comments from article id", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments).toEqual([]);
+      });
+  });
+  test("GET 404 - Responds with not found error if id is valid but not in database", () => {
+    return request(app)
+      .get("/api/articles/500/comments")
+      .expect(404)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("Article not found");
+      });
+  });
+  test("GET 400 - Responds with bad request error if id is invalid", () => {
+    return request(app)
+      .get("/api/articles/NaN/comments")
+      .expect(400)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("Bad request");
       });
   });
 });

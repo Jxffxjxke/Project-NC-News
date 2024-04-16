@@ -4,10 +4,9 @@ exports.getArticle = (req, res, next) => {
   const articleId = req.params.articleId;
   return fetchArticle(articleId)
     .then((article) => {
-      res.status(200).send({article});
+      res.status(200).send({ article });
     })
-    .catch( ( err ) =>
-    {
+    .catch((err) => {
       next(err);
     });
 };
@@ -15,10 +14,9 @@ exports.getArticle = (req, res, next) => {
 exports.getArticles = (req, res, next) => {
   return fetchArticles()
     .then((articles) => {
-      res.status(200).send({articles});
+      res.status(200).send({ articles });
     })
-    .catch( ( err ) =>
-    {
+    .catch((err) => {
       next(err);
     });
 };

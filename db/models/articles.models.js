@@ -12,12 +12,13 @@ exports.fetchArticle = (articleId) => {
         return Promise.reject({ status: 404, message: "Article not found" });
       }
       return rows[0];
-    } )
+    });
 };
 
 exports.fetchArticles = () => {
   return db
-    .query(`
+    .query(
+      `
   SELECT
   a.author,
   a.title,
@@ -36,5 +37,16 @@ exports.fetchArticles = () => {
     )
     .then(({ rows }) => {
       return rows;
+    });
+};
+
+exports.checkArticleExists = (articleId) => {
+  return db
+    .query(`SELECT * FROM articles WHERE article_id=$1;`, [articleId])
+    .then(({ rows: articles }) => {
+      if ( !articles.length )
+      {
+        return Promise.reject({ status: 404, message: "Article not found" });
+      }
     });
 };
