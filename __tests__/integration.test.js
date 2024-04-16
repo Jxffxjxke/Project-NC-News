@@ -163,7 +163,8 @@ describe("/api/articles/:article_id/comments", () => {
       .post("/api/articles/1/comments")
       .send(newComment)
       .expect(201)
-      .then(({ body: { comment } }) => {
+      .then( ( { body: { comment } } ) =>
+      {
         expect(comment).toMatchObject({
           comment_id: 19,
           body: "Comment",
