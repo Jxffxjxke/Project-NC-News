@@ -15,11 +15,10 @@ exports.fetchArticle = (articleId) => {
     });
 };
 
-exports.fetchArticles = () => {
-  return db
-    .query(
-      `
-  SELECT
+exports.fetchArticles = (filter, query) => {
+  const filterBy = ["topic"];
+  const queryVals = [];
+  let queryString = `SELECT
   a.author,
   a.title,
   a.article_id,
@@ -27,17 +26,22 @@ exports.fetchArticles = () => {
   a.created_at,
   a.votes,
   a.article_img_url,
-  c.comment_count
+  COALESCE(CAST(c.comment_count AS INTEGER), 0) AS comment_count
   FROM articles a
   LEFT JOIN (
     SELECT article_id, COUNT(comment_id) AS comment_count
     FROM comments GROUP BY article_id)
-    c ON a.article_id = c.article_id
-    ORDER BY created_at DESC;`
-    )
-    .then(({ rows }) => {
-      return rows;
-    });
+    c ON a.article_id = c.article_id `;
+
+  if (filterBy.includes(filter)) {
+    queryVals.push(query);
+    queryString += `WHERE ${filter}=$1 `;
+  }
+  queryString += `ORDER BY created_at DESC;`;
+
+  return db.query(queryString, queryVals).then(({ rows }) => {
+    return rows;
+  });
 };
 
 exports.checkArticleExists = (articleId) => {

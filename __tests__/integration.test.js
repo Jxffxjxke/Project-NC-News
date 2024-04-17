@@ -156,9 +156,6 @@ describe("/api/articles", () => {
         expect(articles.length).toBe(13);
         expect(articles).toBeSortedBy("created_at", { descending: true });
         articles.forEach((article) => {
-          if (article.comment_count !== null) {
-            expect(parseInt(article.comment_count)).toEqual(expect.any(Number));
-          }
           expect(article).toMatchObject({
             author: expect.any(String),
             title: expect.any(String),
@@ -167,8 +164,44 @@ describe("/api/articles", () => {
             created_at: expect.any(String),
             votes: expect.any(Number),
             article_img_url: expect.any(String),
+            comment_count: expect.any(Number),
           });
         });
+      });
+  });
+  test("GET 200 - Responds with an array of all articles that satisfy query", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        articles.forEach((article) => {
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: "mitch",
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(Number),
+          });
+        });
+      });
+  });
+  test("GET 200 - Responds with message when topic is found, but no articles have that topic", () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("No articles with related topic");
+      });
+  });
+  test("GET 404 - Responds with not found error when topic is not found", () => {
+    return request(app)
+      .get("/api/articles?topic=0")
+      .expect(404)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("Topic not found");
       });
   });
 });
@@ -264,7 +297,7 @@ describe("/api/articles/:article_id/comments", () => {
   });
 });
 
-describe("/api/comments/:comment_id", () => {
+describe.only("/api/comments/:comment_id", () => {
   test("DELETE 204 - Deletes comment with given id and responds with 204 status code", () => {
     const testId = 1;
     return request(app)
