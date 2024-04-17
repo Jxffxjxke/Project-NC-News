@@ -8,7 +8,8 @@ const {
 } = require("./controllers/articles.controllers");
 const {
   getCommentsByArticle,
-  postCommentByArticle,
+    postCommentByArticle,
+  deleteCommentById
 } = require("./controllers/comments.controllers");
 
 const express = require("express");
@@ -26,7 +27,9 @@ app.get("/api/articles/:articleId", getArticle);
 app.patch("/api/articles/:articleId", patchArticleVotes);
 
 app.get("/api/articles/:articleId/comments", getCommentsByArticle);
-app.post("/api/articles/:articleId/comments", postCommentByArticle);
+app.post( "/api/articles/:articleId/comments", postCommentByArticle );
+
+app.delete( '/api/comments/:commentId', deleteCommentById );
 
 app.use(sendError);
 app.all("*", sendURLError);

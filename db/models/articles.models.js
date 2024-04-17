@@ -43,8 +43,8 @@ exports.fetchArticles = () => {
 exports.checkArticleExists = (articleId) => {
   return db
     .query(`SELECT * FROM articles WHERE article_id=$1;`, [articleId])
-    .then(({ rows: articles }) => {
-      if (!articles.length) {
+    .then(({ rows: article }) => {
+      if (!article.length) {
         return Promise.reject({ status: 404, message: "Article not found" });
       }
     });
