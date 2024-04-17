@@ -157,9 +157,7 @@ describe("/api/articles", () => {
         expect(articles).toBeSortedBy("created_at", { descending: true });
         articles.forEach((article) => {
           if (article.comment_count !== null) {
-            expect(JSON.parse(article.comment_count)).toEqual(
-              expect.any(Number)
-            );
+            expect(parseInt(article.comment_count)).toEqual(expect.any(Number));
           }
           expect(article).toMatchObject({
             author: expect.any(String),
@@ -274,13 +272,17 @@ describe("/api/comments/:comment_id", () => {
       .expect(204)
       .then(() => {
         return db
-          .query(
-            `SELECT * FROM comments
+          .query(`SELECT * FROM comments WHERE comment_id=$1;`, [testId])
+          .then(() => {
+            return db
+              .query(
+                `SELECT * FROM comments
       WHERE comment_id=$1;`,
-            [testId]
-          )
-          .then(({ rows }) => {
-            expect(rows.length).toBe(0);
+                [testId]
+              )
+              .then(({ rows }) => {
+                expect(rows.length).toBe(0);
+              });
           });
       });
   });
