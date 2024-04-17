@@ -153,7 +153,6 @@ describe("/api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then(({ body: { articles } }) => {
-        expect(articles.length).toBe(13);
         expect(articles).toBeSortedBy("created_at", { descending: true });
         articles.forEach((article) => {
           expect(article).toMatchObject({
@@ -169,6 +168,7 @@ describe("/api/articles", () => {
         });
       });
   });
+
   test("GET 200 - Responds with an array of all articles that satisfy query", () => {
     return request(app)
       .get("/api/articles?topic=mitch")

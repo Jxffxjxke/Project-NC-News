@@ -18,6 +18,7 @@ exports.fetchArticle = (articleId) => {
 exports.fetchArticles = (filter, query) => {
   const filterBy = ["topic"];
   const queryVals = [];
+  
   let queryString = `SELECT
   a.author,
   a.title,
