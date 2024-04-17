@@ -69,7 +69,7 @@ describe("/api/articles/:article_id", () => {
         });
       });
   });
-  test("GET 404 - Responds with article not foound if valid article id not-existent", () => {
+  test("GET 404 - Responds with article not found if valid article id not-existent", () => {
     return request(app)
       .get("/api/articles/500")
       .expect(404)
@@ -119,6 +119,16 @@ describe("/api/articles/:article_id", () => {
     const send = { inc_votes: 1 };
     return request(app)
       .patch("/api/articles/NaN")
+      .send(send)
+      .expect(400)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("Bad request");
+      });
+  });
+  test("PATCH 400 - Responds with bad request error if inc_votes key is not provided", () => {
+    const send = { not_key: 1 };
+    return request(app)
+      .patch("/api/articles/1")
       .send(send)
       .expect(400)
       .then(({ body: { message } }) => {
@@ -228,7 +238,7 @@ describe("/api/articles/:article_id/comments", () => {
         });
       });
   });
-  test("POST 400 - Responds with a bad request error when request format is incorrect", () => {
+  test("POST 400 - Responds with a bad request error when request format is invalid", () => {
     const newComment = {
       not_body: "Comment",
       author: "lurker",
@@ -274,7 +284,7 @@ describe("/api/comments/:comment_id", () => {
           });
       });
   });
-  test("DELETE 404 - Responds with a 404 comment not found error if comment id is not found", () => {
+  test("DELETE 404 - Responds with a 404 comment not found error if comment id is non-existent", () => {
     return request(app)
       .delete("/api/comments/500")
       .expect(404)
@@ -282,7 +292,7 @@ describe("/api/comments/:comment_id", () => {
         expect(message).toBe("Comment not found");
       });
   });
-  test("DELETE 400 - Responds with a 400 bad request when id is not valid", () => {
+  test("DELETE 400 - Responds with a 400 bad request when id is invalid", () => {
     return request(app)
       .delete("/api/comments/NaN")
       .expect(400)
