@@ -15,11 +15,10 @@ exports.fetchArticle = (articleId) => {
     });
 };
 
-exports.fetchArticles = () => {
-  return db
-    .query(
-      `
-  SELECT
+exports.fetchArticles = (filter, query) => {
+  const filterBy = ["topic"];
+  let queryVals = [];
+  let queryString = `SELECT
   a.author,
   a.title,
   a.article_id,
@@ -32,12 +31,24 @@ exports.fetchArticles = () => {
   LEFT JOIN (
     SELECT article_id, COUNT(comment_id) AS comment_count
     FROM comments GROUP BY article_id)
-    c ON a.article_id = c.article_id
-    ORDER BY created_at DESC;`
-    )
-    .then(({ rows }) => {
-      return rows;
-    });
+    c ON a.article_id = c.article_id `;
+
+  if (filterBy.includes(filter)) {
+    queryVals.push(query);
+    queryString += `WHERE ${filter}=$1 `;
+  }
+  queryString += `ORDER BY created_at DESC;`;
+
+  return db.query(queryString, queryVals).then(({ rows }) => {
+    if ( !rows.length)
+    {
+      return Promise.reject({
+        status: 400,
+        message: "Bad request",
+      });
+    }
+    return rows;
+  });
 };
 
 exports.checkArticleExists = (articleId) => {

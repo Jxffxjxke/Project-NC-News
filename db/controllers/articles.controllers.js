@@ -16,7 +16,9 @@ exports.getArticle = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  return fetchArticles()
+  const [ filterBy ] = Object.keys( req.query );
+  const query = req.query[filterBy]
+  return fetchArticles(filterBy, query)
     .then((articles) => {
       res.status(200).send({ articles });
     })

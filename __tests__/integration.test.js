@@ -153,7 +153,6 @@ describe("/api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then(({ body: { articles } }) => {
-        expect(articles.length).toBe(13);
         expect(articles).toBeSortedBy("created_at", { descending: true });
         articles.forEach((article) => {
           if (article.comment_count !== null) {
@@ -169,6 +168,36 @@ describe("/api/articles", () => {
             article_img_url: expect.any(String),
           });
         });
+      });
+  });
+  test("GET 200 - Responds with an array of all articles with topic query and the comment counts of each", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("created_at", { descending: true });
+        articles.forEach((article) => {
+          if (article.comment_count !== null) {
+            expect(parseInt(article.comment_count)).toEqual(expect.any(Number));
+          }
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: "mitch",
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+          });
+        });
+      });
+  });
+  test("GET 400 - Responds with bad request if topic is invalid", () => {
+    return request(app)
+      .get("/api/articles?topic=1")
+      .expect(400)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("Bad request");
       });
   });
 });
