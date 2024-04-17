@@ -17,7 +17,8 @@ exports.fetchArticle = (articleId) => {
 
 exports.fetchArticles = (filter, query) => {
   const filterBy = ["topic"];
-  let queryVals = [];
+  const queryVals = [];
+  
   let queryString = `SELECT
   a.author,
   a.title,
@@ -26,7 +27,7 @@ exports.fetchArticles = (filter, query) => {
   a.created_at,
   a.votes,
   a.article_img_url,
-  c.comment_count
+  COALESCE(CAST(c.comment_count AS INTEGER), 0) AS comment_count
   FROM articles a
   LEFT JOIN (
     SELECT article_id, COUNT(comment_id) AS comment_count
@@ -40,13 +41,6 @@ exports.fetchArticles = (filter, query) => {
   queryString += `ORDER BY created_at DESC;`;
 
   return db.query(queryString, queryVals).then(({ rows }) => {
-    if ( !rows.length)
-    {
-      return Promise.reject({
-        status: 400,
-        message: "Bad request",
-      });
-    }
     return rows;
   });
 };

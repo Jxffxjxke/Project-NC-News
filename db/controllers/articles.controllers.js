@@ -3,6 +3,7 @@ const {
   fetchArticles,
   updateVotes,
 } = require("../models/articles.models");
+const { checkTopicExists } = require("../models/topic.models");
 
 exports.getArticle = (req, res, next) => {
   const articleId = req.params.articleId;
@@ -16,11 +17,22 @@ exports.getArticle = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  const [ filterBy ] = Object.keys( req.query );
-  const query = req.query[filterBy]
-  return fetchArticles(filterBy, query)
-    .then((articles) => {
-      res.status(200).send({ articles });
+  const [filterBy] = Object.keys(req.query);
+  const topic = req.query[filterBy];
+  let shouldCheck = false;
+  if (filterBy) {
+    shouldCheck = true;
+  }
+  Promise.all([
+    fetchArticles(filterBy, topic),
+    checkTopicExists(shouldCheck, topic),
+  ])
+    .then(([articles]) => {
+      if (!articles.length) {
+        res.status(200).send({ message: "No articles with related topic" });
+      } else {
+        res.status(200).send({ articles });
+      }
     })
     .catch((err) => {
       next(err);
