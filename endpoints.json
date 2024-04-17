@@ -92,11 +92,29 @@
     "queries": [],
     "exampleResponse": {
       "users": [
-         {
-           "username": "butter_bridge",
-           "name": "jonny",
-           "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
-         }
+        {
+          "username": "butter_bridge",
+          "name": "jonny",
+          "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+        }
+      ]
+    }
+  },
+  "GET /api/articles?:key=:value": {
+    "description": "serves an array of all articles with 'key' equalling the 'value'",
+    "queries": ["topic"],
+    "exampleResponse": {
+      "users": [
+        {
+          "author": "icellusedkars",
+          "title": "Eight pug gifs that remind me of mitch",
+          "article_id": 3,
+          "topic": "value-in-query",
+          "created_at": "2020-11-03T09:12:00.000Z",
+          "votes": 0,
+          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          "comment_count": "2"
+        }
       ]
     }
   }
