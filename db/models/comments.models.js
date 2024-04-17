@@ -27,3 +27,30 @@ exports.insertComment = (body, articleId, author) => {
       return rows[0];
     });
 };
+
+exports.removeComment = (commentId) => {
+  return db
+    .query(
+      `DELETE FROM comments WHERE comment_id=$1
+    RETURNING *;`,
+      [commentId]
+    )
+    .then(({ rows }) => {
+      if (!rows.length) {
+        return Promise.reject({ status: 404, message: "Comment not found" });
+      }
+      return rows[0];
+    });
+};
+
+exports.checkCommentExists = ( commentId ) =>
+{
+  return db
+    .query(`SELECT * FROM articles WHERE article_id=$1;`, [commentId])
+    .then(({ rows: comment }) => {
+      if ( !comment.length )
+      {
+        return Promise.reject({ status: 404, message: "Comment not found" });
+      }
+    });
+};

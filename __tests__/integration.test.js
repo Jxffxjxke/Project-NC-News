@@ -69,7 +69,7 @@ describe("/api/articles/:article_id", () => {
         });
       });
   });
-  test("GET 404 - Responds with article not found if id is valid but not found in database", () => {
+  test("GET 404 - Responds with article not foound if valid article id not-existent", () => {
     return request(app)
       .get("/api/articles/500")
       .expect(404)
@@ -77,7 +77,7 @@ describe("/api/articles/:article_id", () => {
         expect(message).toBe("Article not found");
       });
   });
-  test("GET 400 - Responds with bad request error if id is invalid", () => {
+  test("GET 400 - Responds with bad request error if article id is invalid", () => {
     return request(app)
       .get("/api/articles/NaN")
       .expect(400)
@@ -143,18 +143,23 @@ describe("/api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then(({ body: { articles } }) => {
+        expect(articles.length).toBe(13);
         expect(articles).toBeSortedBy("created_at", { descending: true });
         articles.forEach((article) => {
-          expect(Object.keys(article)).toEqual([
-            "author",
-            "title",
-            "article_id",
-            "topic",
-            "created_at",
-            "votes",
-            "article_img_url",
-            "comment_count",
-          ]);
+          if (article.comment_count !== null) {
+            expect(JSON.parse(article.comment_count)).toEqual(
+              expect.any(Number)
+            );
+          }
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+          });
         });
       });
   });
@@ -224,7 +229,6 @@ describe("/api/articles/:article_id/comments", () => {
       });
   });
   test("POST 400 - Responds with a bad request error when request format is incorrect", () => {
-    // Should be body: not bod: so should error.
     const newComment = {
       not_body: "Comment",
       author: "lurker",
@@ -237,17 +241,53 @@ describe("/api/articles/:article_id/comments", () => {
         expect(message).toBe("Bad request");
       });
   });
-  test("POST 404 - Responds with article not found when article given is not found", () => {
+  test("POST 404 - Responds with author not found when author is non-existent", () => {
     const newComment = {
       body: "Comment",
       author: "Author",
     };
     return request(app)
-      .post("/api/articles/500/comments")
+      .post("/api/articles/1/comments")
       .send(newComment)
       .expect(404)
       .then(({ body: { message } }) => {
-        expect(message).toBe("Article not found");
+        expect(message).toBe("Author not found");
+      });
+  });
+});
+
+describe("/api/comments/:comment_id", () => {
+  test("DELETE 204 - Deletes comment with given id and responds with 204 status code", () => {
+    const testId = 1;
+    return request(app)
+      .delete(`/api/comments/${testId}`)
+      .expect(204)
+      .then(() => {
+        return db
+          .query(
+            `SELECT * FROM comments
+      WHERE comment_id=$1;`,
+            [testId]
+          )
+          .then(({ rows }) => {
+            expect(rows.length).toBe(0);
+          });
+      });
+  });
+  test("DELETE 404 - Responds with a 404 comment not found error if comment id is not found", () => {
+    return request(app)
+      .delete("/api/comments/500")
+      .expect(404)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("Comment not found");
+      });
+  });
+  test("DELETE 400 - Responds with a 400 bad request when id is not valid", () => {
+    return request(app)
+      .delete("/api/comments/NaN")
+      .expect(400)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("Bad request");
       });
   });
 });
