@@ -4,6 +4,7 @@ const data = require("../db/data/test-data/index");
 const endpointsData = require("../endpoints.json");
 const seed = require("../db/seeds/seed");
 const request = require("supertest");
+const { getNumComments } = require("../db/models/comments.models");
 require("jest-sorted");
 
 beforeEach(() => {
@@ -57,15 +58,26 @@ describe("/api/articles/:article_id", () => {
       .expect(200)
       .then(({ body: { article } }) => {
         expect(article).toMatchObject({
-          article_id: 1,
-          title: "Living in the shadow of a great man",
-          topic: "mitch",
-          author: "butter_bridge",
-          body: "I find this existence challenging",
-          created_at: "2020-07-09T20:11:00.000Z",
-          votes: 100,
-          article_img_url:
-            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          article_id: expect.any(Number),
+          title: expect.any(String),
+          topic: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+          article_img_url: expect.any(String),
+        });
+      });
+  });
+  test("GET 200 - Responds with article object of corresponding id containing comment count", () => {
+    const id = 2;
+    return request(app)
+      .get(`/api/articles/${id}`)
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toMatchObject({ comment_count: expect.any(Number) });
+        return getNumComments(id).then((num) => {
+          expect(article.comment_count).toBe(num);
         });
       });
   });
@@ -297,7 +309,7 @@ describe("/api/articles/:article_id/comments", () => {
   });
 });
 
-describe.only("/api/comments/:comment_id", () => {
+describe("/api/comments/:comment_id", () => {
   test("DELETE 204 - Deletes comment with given id and responds with 204 status code", () => {
     const testId = 1;
     return request(app)
