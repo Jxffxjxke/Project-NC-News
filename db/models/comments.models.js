@@ -43,14 +43,20 @@ exports.removeComment = (commentId) => {
     });
 };
 
-exports.checkCommentExists = ( commentId ) =>
-{
+exports.checkCommentExists = (commentId) => {
   return db
     .query(`SELECT * FROM articles WHERE article_id=$1;`, [commentId])
     .then(({ rows: comment }) => {
-      if ( !comment.length )
-      {
+      if (!comment.length) {
         return Promise.reject({ status: 404, message: "Comment not found" });
       }
+    });
+};
+
+exports.getNumComments = (articleId) => {
+  return db
+    .query(`SELECT * FROM comments WHERE article_id=$1;`, [articleId])
+    .then(({ rows }) => {
+      return rows.length;
     });
 };

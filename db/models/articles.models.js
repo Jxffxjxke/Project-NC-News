@@ -1,11 +1,12 @@
 const db = require("../connection");
 
-exports.fetchArticle = (articleId) => {
+exports.fetchArticle = (articleId, numComments) => {
   return db
     .query(
-      `SELECT * FROM articles
-    WHERE article_id = $1;`,
-      [articleId]
+      `SELECT *, CAST($1 AS INTEGER) AS comment_count
+      FROM articles
+    WHERE article_id = $2;`,
+      [numComments, articleId]
     )
     .then(({ rows }) => {
       if (!rows.length) {
@@ -18,7 +19,7 @@ exports.fetchArticle = (articleId) => {
 exports.fetchArticles = (filter, query) => {
   const filterBy = ["topic"];
   const queryVals = [];
-  
+
   let queryString = `SELECT
   a.author,
   a.title,
