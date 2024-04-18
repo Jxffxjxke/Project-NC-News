@@ -8,10 +8,7 @@ const { getNumComments } = require("../models/comments.models");
 
 exports.getArticle = (req, res, next) => {
   const { articleId } = req.params;
-  return getNumComments(articleId)
-    .then((numComments) => {
-      return fetchArticle(articleId, numComments);
-    })
+  return fetchArticle(articleId)
     .then((article) => {
       res.status(200).send({ article });
     })
