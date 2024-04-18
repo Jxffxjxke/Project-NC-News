@@ -10,8 +10,6 @@ Welcome to the Northcoders' News API! This API allows you to programmatically ac
 - [Postgres](https://www.postgresql.org/download/) v14.11
 
 ## Installation
-
-To get started:
 ```
 -Clone this repository to your local machine.
 -In the root of the folder, create two .env files: .env.test and .env.development.
