@@ -16,10 +16,10 @@ Welcome to the Northcoders' News API! This API allows you to programmatically ac
 -In each .env file, add the following:
 [PGDATABASE=yout_test_database] // for .env.test
 [PGDATABASE=your_dev_database] // for .env.development
--Run npm i to install all dependencies.
--Run npm setup-dbs to create the local databases.
--Seed the local database by running npm run seed.
--Finally, execute npm run test to run the test script.
+-Run 'npm i' to install all dependencies.
+-Run 'npm setup-dbs' to create the local databases.
+-Seed the local database by running 'npm run seed'.
+-Finally, execute 'npm run test' to run the test script.
 ```
 
 This README is aimed at developers interested in exploring and potentially contributing to this project. Feel free to try it out and explore the functionalities!
