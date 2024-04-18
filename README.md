@@ -1,13 +1,29 @@
-# My Back-End-Project: Northcoders News API
+# Northcoders' News API
 
-Create .env.test, .env.development, .gitignore files and git init.
+Hosted Link: https://project-nc-news-xdpp.onrender.com
 
-.env.test ->
-PGDATABASE = nc_news_test
+Welcome to the Northcoders' News API! This API allows you to programmatically access application data, mimicking real working backend services like Reddit. Here, you can retrieve information about news articles.
 
-.env.development ->
-PGDATABASE=nc_news
+### Requirements:
 
-.gitignore ->
-node_modules
-.env.*
+- [Node.js](https://nodejs.org/en/) v21.6.1
+- [Postgres](https://www.postgresql.org/download/) v14.11
+
+## Installation
+
+To get started:
+...
+-Clone this repository to your local machine.
+-In the root of the folder, create two .env files: .env.test and .env.development.
+-In each .env file, add the following:
+[PGDATABASE=nc_news_test] // for .env.test
+[PGDATABASE=nc_news] // for .env.development
+-Run npm i to install all dependencies.
+-Run npm setup-dbs to create the local databases.
+-Seed the local database by running npm run seed.
+-Finally, execute npm run test to run the test script.
+...
+
+This README is aimed at developers interested in exploring and potentially contributing to this project. Feel free to try it out and explore the functionalities!
+
+If you have any questions or feedback, don't hesitate to reach out.
