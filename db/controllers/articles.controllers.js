@@ -4,7 +4,6 @@ const {
   updateVotes,
 } = require("../models/articles.models");
 const { checkTopicExists } = require("../models/topic.models");
-const { getNumComments } = require("../models/comments.models");
 
 exports.getArticle = (req, res, next) => {
   const { articleId } = req.params;
@@ -18,14 +17,10 @@ exports.getArticle = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  const [filterBy] = Object.keys(req.query);
-  const topic = req.query[filterBy];
-  let shouldCheck = false;
-  if (filterBy) {
-    shouldCheck = true;
-  }
+  const { topic, sort_by, order } = req.query;
+  let shouldCheck = topic ? true : false;
   Promise.all([
-    fetchArticles(filterBy, topic),
+    fetchArticles(topic, sort_by, order),
     checkTopicExists(shouldCheck, topic),
   ])
     .then(([articles]) => {

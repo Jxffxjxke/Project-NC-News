@@ -178,8 +178,7 @@ describe("/api/articles", () => {
         });
       });
   });
-
-  test("GET 200 - Responds with an array of all articles that satisfy query", () => {
+  test("GET 200 - Responds with an array of all articles that satisfy topic query", () => {
     return request(app)
       .get("/api/articles?topic=mitch")
       .expect(200)
@@ -212,6 +211,38 @@ describe("/api/articles", () => {
       .expect(404)
       .then(({ body: { message } }) => {
         expect(message).toBe("Topic not found");
+      });
+  });
+  test("GET 200: Responds with articles sorted by valid query", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("title", { descending: true });
+      });
+  });
+  test("GET 200: Responds with articles ordered by order query, sortBy default is created_at", () => {
+    return request(app)
+      .get("/api/articles?order=asc")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("created_at");
+      });
+  });
+  test("GET 400: Responds with an invalid query error when sort_by query is invalid", () => {
+    return request(app)
+      .get("/api/articles?sort_by=dog")
+      .expect(400)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("invalid query");
+      });
+  });
+  test("GET 400: Responds with an invalid query error when order query is invalid", () => {
+    return request(app)
+      .get("/api/articles?order=dog")
+      .expect(400)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("invalid query");
       });
   });
 });
