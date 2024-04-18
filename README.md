@@ -16,8 +16,8 @@ To get started:
 -Clone this repository to your local machine.
 -In the root of the folder, create two .env files: .env.test and .env.development.
 -In each .env file, add the following:
-[PGDATABASE=nc_news_test] // for .env.test
-[PGDATABASE=nc_news] // for .env.development
+[PGDATABASE=yout_test_database] // for .env.test
+[PGDATABASE=your_dev_database] // for .env.development
 -Run npm i to install all dependencies.
 -Run npm setup-dbs to create the local databases.
 -Seed the local database by running npm run seed.
