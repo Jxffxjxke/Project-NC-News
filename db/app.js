@@ -1,22 +1,22 @@
-const { getTopics } = require("./controllers/topic.controllers");
-const { sendURLError, sendError } = require("./errors/errors");
-const { getEndpoints } = require("./controllers/endpoints.controllers");
+const { getTopics } = require("../controllers/topic.controllers");
+const { sendURLError, sendError } = require("../errors");
+const { getEndpoints } = require("../controllers/endpoints.controllers");
 const {
   getArticle,
   getArticles,
   patchArticleVotes,
-} = require("./controllers/articles.controllers");
+} = require("../controllers/articles.controllers");
 const {
   getCommentsByArticle,
   postCommentByArticle,
   deleteCommentById,
-} = require("./controllers/comments.controllers");
-const { getUsers } = require("./controllers/users.controllers");
+} = require("../controllers/comments.controllers");
+const { getUsers } = require("../controllers/users.controllers");
 
 const express = require("express");
 const app = express();
 
-app.use(express.json());
+app.use( express.json() );
 
 app.get("/api", getEndpoints);
 

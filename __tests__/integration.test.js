@@ -4,7 +4,6 @@ const data = require("../db/data/test-data/index");
 const endpointsData = require("../endpoints.json");
 const seed = require("../db/seeds/seed");
 const request = require("supertest");
-const { getNumComments } = require("../db/models/comments.models");
 require("jest-sorted");
 
 beforeEach(() => {

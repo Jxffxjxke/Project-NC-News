@@ -1,4 +1,4 @@
-const db = require("../connection");
+const db = require("../db/connection");
 
 exports.fetchArticle = (articleId) => {
   return db
