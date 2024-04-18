@@ -13,8 +13,8 @@ Welcome to the Northcoders' News API! This API allows you to programmatically ac
 - In the root of the folder, create two .env files: .env.test and .env.development.
 - In each .env file, add the following:
 ```
-[PGDATABASE=yout_test_database] // for .env.test
-[PGDATABASE=your_dev_database] // for .env.development
+PGDATABASE=nc_news_test // for .env.test
+PGDATABASE=nc_news // for .env.development
 ```
 - Run `npm i` to install all dependencies.
 - Run `npm setup-dbs` to create the local databases.
