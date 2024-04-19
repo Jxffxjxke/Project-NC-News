@@ -375,6 +375,40 @@ describe("/api/comments/:comment_id", () => {
         expect(message).toBe("Bad request");
       });
   });
+  test("PATCH 200 - Responds with updated comment object", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: 1 })
+      .expect(200)
+      .then(({ body: { comment } }) => {
+        expect(comment).toMatchObject({
+          article_id: 9,
+          author: "butter_bridge",
+          body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+          comment_id: 1,
+          created_at: "2020-04-06T12:17:00.000Z",
+          votes: 17,
+        });
+      });
+  });
+  test("PATCH 404 - Responds with 404 error when comment is valid but not found", () => {
+    return request(app)
+      .patch("/api/comments/500")
+      .send({ inc_votes: 1 })
+      .expect(404)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("Comment not found");
+      });
+  });
+  test("PATCH 400 - Responds with 400 error when body format is invalid", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: "NaN" })
+      .expect(400)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("Bad request");
+      });
+  });
 });
 
 describe("/api/users", () => {

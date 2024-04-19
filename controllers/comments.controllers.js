@@ -3,6 +3,7 @@ const {
   insertComment,
   removeComment,
   checkCommentExists,
+  updateComment,
 } = require("../models/comments.models");
 const { checkArticleExists } = require("../models/articles.models");
 const { checkUsernameExists } = require("../models/users.models");
@@ -39,6 +40,21 @@ exports.deleteCommentById = (req, res, next) => {
   Promise.all([checkCommentExists(commentId), removeComment(commentId)])
     .then(() => {
       res.status(204).send();
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.patchComment = (req, res, next) => {
+  const { commentId } = req.params;
+  const { inc_votes } = req.body;
+  Promise.all([
+    updateComment(commentId, inc_votes),
+    checkCommentExists(commentId),
+  ])
+    .then(([comment]) => {
+      res.status(200).send({ comment });
     })
     .catch((err) => {
       next(err);
