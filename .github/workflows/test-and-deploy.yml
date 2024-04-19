@@ -26,11 +26,5 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Setup dbs
-        run: psql -f ./db/setup.sql
-        
-      - name: Seed
-        run: node ./db/seeds/run-seed.js  
-
       - name: Run tests
         run: PGDATABASE=nc_news_test PGUSER=test_user PGPASSWORD=test_password npm t
