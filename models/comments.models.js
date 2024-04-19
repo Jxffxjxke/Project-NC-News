@@ -1,4 +1,4 @@
-const db = require("../connection");
+const db = require("../db/connection");
 
 exports.fetchComments = (articleId) => {
   return db
@@ -43,13 +43,11 @@ exports.removeComment = (commentId) => {
     });
 };
 
-exports.checkCommentExists = ( commentId ) =>
-{
+exports.checkCommentExists = (commentId) => {
   return db
     .query(`SELECT * FROM articles WHERE article_id=$1;`, [commentId])
     .then(({ rows: comment }) => {
-      if ( !comment.length )
-      {
+      if (!comment.length) {
         return Promise.reject({ status: 404, message: "Comment not found" });
       }
     });

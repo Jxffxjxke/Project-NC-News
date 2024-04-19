@@ -6,7 +6,7 @@ const {
 const { checkTopicExists } = require("../models/topic.models");
 
 exports.getArticle = (req, res, next) => {
-  const articleId = req.params.articleId;
+  const { articleId } = req.params;
   return fetchArticle(articleId)
     .then((article) => {
       res.status(200).send({ article });

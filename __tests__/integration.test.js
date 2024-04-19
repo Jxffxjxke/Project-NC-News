@@ -6,13 +6,9 @@ const seed = require("../db/seeds/seed");
 const request = require("supertest");
 require("jest-sorted");
 
-beforeEach(() => {
-  return seed(data);
-});
+beforeEach(() => seed(data));
 
-afterAll(() => {
-  return db.end();
-});
+afterAll(() => db.end());
 
 describe("Any incorrect URL", () => {
   test("ANY 404: For incorrect URL input, responds with a bad request error", () => {
@@ -67,6 +63,15 @@ describe("/api/articles/:article_id", () => {
           article_img_url:
             "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
         });
+      });
+  });
+  test("GET 200 - Responds with article object of corresponding id containing comment count", () => {
+    const id = 1;
+    return request(app)
+      .get(`/api/articles/${id}`)
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toMatchObject({ comment_count: 11 });
       });
   });
   test("GET 404 - Responds with article not found if valid article id not-existent", () => {
@@ -297,7 +302,7 @@ describe("/api/articles/:article_id/comments", () => {
   });
 });
 
-describe.only("/api/comments/:comment_id", () => {
+describe("/api/comments/:comment_id", () => {
   test("DELETE 204 - Deletes comment with given id and responds with 204 status code", () => {
     const testId = 1;
     return request(app)
