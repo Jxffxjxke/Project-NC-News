@@ -6,13 +6,9 @@ const seed = require("../db/seeds/seed");
 const request = require("supertest");
 require("jest-sorted");
 
-beforeEach(() => {
-  return seed(data);
-});
+beforeEach(() => seed(data));
 
-afterAll(() => {
-  return db.end();
-});
+afterAll(() => db.end());
 
 describe("Any incorrect URL", () => {
   test("ANY 404: For incorrect URL input, responds with a bad request error", () => {
