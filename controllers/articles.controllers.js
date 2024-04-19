@@ -4,7 +4,6 @@ const {
   updateVotes,
 } = require("../models/articles.models");
 const { checkTopicExists } = require("../models/topic.models");
-const { getNumComments } = require("../models/comments.models");
 
 exports.getArticle = (req, res, next) => {
   const { articleId } = req.params;
