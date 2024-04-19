@@ -395,4 +395,25 @@ describe("/api/users", () => {
         });
       });
   });
+  test("GET 200 - Responds with user object of provided username", () => {
+    return request(app)
+      .get("/api/users/lurker")
+      .expect(200)
+      .then(({ body: { user } }) => {
+        expect(user).toMatchObject({
+          username: "lurker",
+          name: "do_nothing",
+          avatar_url:
+            "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+        });
+      });
+  });
+  test("GET 404 - Responds with not found error if username is valid and not in database", () => {
+    return request(app)
+      .get("/api/users/non-user")
+      .expect(404)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("Username not found");
+      });
+  });
 });
