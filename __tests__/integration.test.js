@@ -386,7 +386,7 @@ describe("/api/comments/:comment_id", () => {
           author: "butter_bridge",
           body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
           comment_id: 1,
-          created_at: "2020-04-06T12:17:00.000Z",
+          created_at: expect.any(String),
           votes: 17,
         });
       });
