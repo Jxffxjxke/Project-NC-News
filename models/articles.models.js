@@ -19,30 +19,44 @@ exports.fetchArticle = (articleId) => {
     });
 };
 
-exports.fetchArticles = (filter, query) => {
-  const filterBy = ["topic"];
+exports.fetchArticles = (topic, sortBy = "created_at", order = "desc") => {
+  const validQuery = [
+    "title",
+    "topic",
+    "author",
+    "body",
+    "created_at",
+    "votes",
+    "article_img_url",
+    "article_id",
+    "comment_count",
+    "asc",
+    "desc",
+  ];
+
+  if (!validQuery.includes(sortBy) || !validQuery.includes(order)) {
+    return Promise.reject({ status: 400, message: "invalid query" });
+  }
   const queryVals = [];
 
-  let queryString = `SELECT
-  a.author,
-  a.title,
-  a.article_id,
-  a.topic,
-  a.created_at,
-  a.votes,
-  a.article_img_url,
-  COALESCE(CAST(c.comment_count AS INTEGER), 0) AS comment_count
-  FROM articles a
-  LEFT JOIN (
-    SELECT article_id, COUNT(comment_id) AS comment_count
-    FROM comments GROUP BY article_id)
-    c ON a.article_id = c.article_id `;
+  let queryString = `SELECT 
+  articles.author,
+  title,
+  articles.article_id,
+  topic,
+  articles.created_at,
+  articles.votes,
+  articles.article_img_url,
+  COUNT(comment_id)::int AS comment_count
+  FROM articles LEFT JOIN comments 
+  ON articles.article_id = comments.article_id
+  GROUP BY articles.article_id`;
 
-  if (filterBy.includes(filter)) {
-    queryVals.push(query);
-    queryString += `WHERE ${filter}=$1 `;
+  if (topic) {
+    queryVals.push(topic);
+    queryString += ` HAVING articles.topic = $1 `;
   }
-  queryString += `ORDER BY created_at DESC;`;
+  queryString += ` ORDER BY ${sortBy} ${order};`;
 
   return db.query(queryString, queryVals).then(({ rows }) => {
     return rows;
